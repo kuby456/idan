@@ -407,9 +407,10 @@ await loadQuestionsFromDB();
 
 
   // תיבת קוד מנהל (רק בדף הראשון)
-  const adminBox = document.createElement("div");
-  adminBox.innerHTML = `
-    <div id="adminAccess" style="margin-top:20px;">
+const adminBox = document.createElement("div");
+adminBox.innerHTML = `
+  <div id="adminAccess" style="margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+    <div style="display:flex; gap:10px; align-items:center;">
       <input type="password" id="adminCodeInput" placeholder="🔒 הזן קוד מנהל לגישה"
              style="padding:10px; text-align:right; border-radius:8px; border:1px solid #ccc; font-size:16px; direction:rtl;">
       <button id="adminSubmit"
@@ -417,34 +418,49 @@ await loadQuestionsFromDB();
                      border-radius:50%; cursor:pointer; width:50px; height:50px; font-size:22px;">
         ✅
       </button>
-      <p id="adminMessage" style="color:red; margin-top:10px;"></p>
     </div>
-  `;
-  adminBtn.replaceWith(adminBox);
+    <p id="adminMessage" style="color:red; margin-top:8px; font-weight:bold;"></p>
+    <button id="adminPanelBtn"
+            style="display:none; padding:12px 20px; background:#2563eb; color:white;
+                   border:none; border-radius:10px; font-size:16px; font-weight:bold;
+                   box-shadow:0 8px 24px rgba(37,99,235,0.2); cursor:pointer;">
+      🧩 כניסה למערכת הניהול
+    </button>
+  </div>
+`;
+adminBtn.replaceWith(adminBox);
 
-  const adminCodeInput = document.getElementById("adminCodeInput");
-  const adminSubmit = document.getElementById("adminSubmit");
-  const adminMessage = document.getElementById("adminMessage");
+const adminCodeInput = document.getElementById("adminCodeInput");
+const adminSubmit = document.getElementById("adminSubmit");
+const adminMessage = document.getElementById("adminMessage");
+const adminPanelBtn = document.getElementById("adminPanelBtn");
 
-  // אם כבר הוזן קוד פעם אחת
-  if (localStorage.getItem("admin_verified") === "true") {
+// אם כבר אומת בעבר
+if (localStorage.getItem("admin_verified") === "true") {
+  adminMessage.style.color = "green";
+  adminMessage.innerText = "✔️ גישה מאושרת";
+  adminPanelBtn.style.display = "inline-block";
+}
+
+// בדיקת קוד
+adminSubmit.onclick = () => {
+  const code = adminCodeInput.value.trim();
+  if (code === "15435000") {
+    localStorage.setItem("admin_verified", "true");
     adminMessage.style.color = "green";
-    adminMessage.innerText = "✔️ גישה מאושרת";
+    adminMessage.innerText = "✔️ כניסה מאושרת!";
+    adminPanelBtn.style.display = "inline-block";
+  } else {
+    adminMessage.style.color = "red";
+    adminMessage.innerText = "❌ קוד שגוי, נסה שוב.";
   }
+};
 
-  // בדיקת קוד
-  adminSubmit.onclick = () => {
-    const code = adminCodeInput.value.trim();
-    if (code === "15435000") {
-      localStorage.setItem("admin_verified", "true");
-      adminMessage.style.color = "green";
-      adminMessage.innerText = "✔️ כניסה מאושרת!";
-      setTimeout(() => (window.location.href = "summaries.html"), 1000);
-    } else {
-      adminMessage.style.color = "red";
-      adminMessage.innerText = "❌ קוד שגוי, נסה שוב.";
-    }
-  };
+// כפתור מעבר למערכת הניהול
+adminPanelBtn.onclick = () => {
+  window.location.href = "summaries.html";
+};
+
 
   // מעבר לשאלון
   startBtn.onclick = () => {
