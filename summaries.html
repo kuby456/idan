@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>סיכומי שאלונים</title>
+  <style>
+:root{
+  --bg-color: #f7fafc;
+  --card-bg: #ffffff;
+  --muted: #6b7280;
+  --accent: #2563eb; /* primary blue */
+  --accent-2: #f59e0b; /* edit amber */
+  --glass: rgba(255,255,255,0.6);
+  --card-radius: 12px;
+  --shadow: 0 6px 18px rgba(15,23,42,0.08);
+  --max-width: 1100px;
+  --gap-mobile: 12px;
+  --gap-desktop: 18px;
+  --ui-font-sm: 0.88rem;
+  --ui-font-md: 1rem;
+  --ui-font-lg: 1.05rem;
+  --touch-target: 48px;
+}
+
+/* Reset & base */
+*{ box-sizing: border-box; }
+html,body{
+  height:100%;
+  margin:0;
+  padding:0;
+  direction: rtl; /* ensure RTL layout */
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", "Segoe UI Emoji", "Segoe UI Symbol";
+  background:
+    linear-gradient(180deg, rgba(37,99,235,0.03), transparent 120px),
+    var(--bg-color);
+  color: #0f172a;
+  -webkit-text-size-adjust:100%;
+}
+
+/* Page padding - leave space for mobile fixed actions */
+body{
+  padding: 18px;
+  padding-bottom: 86px; /* room for mobile action bar when shown */
+  text-align: right;
+}
+
+/* Container for cards - centered, responsive columns */
+.cards-container{
+  max-width: var(--max-width);
+  margin: 12px auto 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-mobile);
+  align-items: start;
+  padding: 6px;
+}
+
+/* Larger screens: 2-3 columns */
+@media (min-width: 640px){
+  .cards-container{
+    grid-template-columns: repeat(2, 1fr);
+    gap: calc(var(--gap-desktop));
+  }
+}
+@media (min-width: 1000px){
+  .cards-container{
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+}
+
+/* Card */
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), var(--card-bg));
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  cursor: pointer;
+  transition: transform 180ms cubic-bezier(.2,.9,.2,1), box-shadow 180ms;
+  border: 1px solid rgba(15,23,42,0.04);
+  min-height: 72px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  overflow:hidden;
+  position:relative;
+  word-break:break-word;
+}
+
+/* Hover & focus (desktop) */
+@media (hover:hover){
+  .card:hover,
+  .card:focus{
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(2,6,23,0.12);
+    outline: none;
+  }
+}
+
+/* Open state */
+.card.open{
+  border-color: rgba(37,99,235,0.12);
+  box-shadow: 0 18px 40px rgba(37,99,235,0.08);
+}
+
+/* Headings & meta */
+.card h3{
+  margin:0;
+  font-size: var(--ui-font-md);
+  font-weight:600;
+  color:#071133;
+  line-height:1.1;
+}
+.card p{
+  margin:0;
+  color: var(--muted);
+  font-size: var(--ui-font-sm);
+  line-height:1.25;
+}
+
+/* Preformatted answers */
+.card pre{
+  margin: 8px 0 0;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  color: #0b1220;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Noto Mono", monospace;
+  font-size: 0.92rem;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow:auto;
+  border: 1px dashed rgba(10,20,40,0.04);
+  max-height: 52vh;
+}
+
+/* Buttons default */
+button{
+  -webkit-appearance:none;
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+  border-radius:10px;
+  padding:10px 14px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  justify-content:center;
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms;
+  box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+  color:white;
+  text-decoration:none;
+  font-size: var(--ui-font-sm);
+}
+
+/* Back button (first button in body) */
+body > button:first-of-type{
+  background: var(--accent);
+  color: #fff;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+}
+@media (max-width:720px){
+  body > button:first-of-type{
+    padding: 12px 16px;
+    font-size: var(--ui-font-md);
+  }
+}
+
+/* Edit button */
+#editQuestionsBtn{
+  background: var(--accent-2);
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: #fff;
+}
+#editQuestionsBtn:hover{ transform: translateY(-2px); }
+
+/* Refresh button */
+#refreshBtn{
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid rgba(37,99,235,0.12);
+  padding: 9px 12px;
+  border-radius: 8px;
+  box-shadow: none;
+  margin-left: 6px;
+}
+#refreshBtn:hover{
+  background: rgba(37,99,235,0.06);
+  transform: translateY(-2px);
+}
+
+/* Loading/empty text */
+.cards-container > p{
+  text-align:center;
+  color: var(--muted);
+  font-size: var(--ui-font-md);
+  padding: 14px;
+  margin:8px auto;
+}
+
+/* Focus styles for accessibility */
+button:focus, .card:focus{
+  outline: 3px solid rgba(37,99,235,0.14);
+  outline-offset: 2px;
+}
+
+/* Ensure wrapping */
+.card h3, .card p, .card pre{ overflow-wrap:anywhere; }
+
+/* Mobile-specific adjustments (phone-first) */
+@media (max-width:720px){
+  body{ padding:14px; padding-bottom: 110px; } /* more space for bottom actions */
+  .cards-container{ gap: var(--gap-mobile); padding:4px; }
+
+  .card{
+    padding: 14px;
+    border-radius: 14px;
+    min-height:80px;
+  }
+  .card h3{ font-size: 1.02rem; }
+  .card p{ font-size: var(--ui-font-sm); }
+
+  /* make pre area shorter on mobile so content doesn't push behind action bar */
+  .card pre{ max-height: 36vh; font-size: 0.9rem; }
+
+  /* Make buttons larger, easier to tap */
+  button{
+    min-height: var(--touch-target);
+    padding: 12px 16px;
+    font-size: var(--ui-font-md);
+    border-radius: 12px;
+  }
+
+  /* Place edit + refresh as a sticky bottom action bar for thumbs */
+  #editQuestionsBtn,
+  #refreshBtn{
+    position: fixed;
+    bottom: 16px;
+    z-index: 60;
+    box-shadow: 0 12px 30px rgba(2,6,23,0.12);
+  }
+
+  /* Edit on the right, refresh on the left (RTL friendly) */
+  #editQuestionsBtn{
+    right: 16px;
+    left: auto;
+    width: calc(50% - 26px);
+    max-width: 320px;
+    border-radius: 12px;
+    display: inline-flex;
+    justify-content:center;
+  }
+  #refreshBtn{
+    left: 16px;
+    right: auto;
+    width: calc(50% - 26px);
+    max-width: 320px;
+    border-radius: 12px;
+    display:inline-flex;
+    justify-content:center;
+    background: #fff;
+    color: var(--accent);
+    border: 1px solid rgba(37,99,235,0.12);
+  }
+
+  /* hide the centered edit button's container spacing (if any) by reducing margins */
+  #editQuestionsBtn[style], body > div[style] { /* best-effort: don't rely on inline styles but keep safe */
+    margin:0;
+    text-align:center;
+  }
+
+  /* reduce hover transforms on mobile to avoid accidental movement */
+  @media (hover:none){
+    .card:hover{ transform:none; box-shadow: var(--shadow); }
+  }
+}
+
+/* Tablet / small-desktop tweaks */
+@media (min-width:721px) and (max-width:999px){
+  body{ padding:20px; padding-bottom:48px; }
+  .cards-container{ gap:16px; }
+  .card{ padding:14px; border-radius:12px; }
+  button{ font-size: var(--ui-font-md); padding:10px 14px; }
+  #editQuestionsBtn, #refreshBtn{ position: static; width: auto; box-shadow: 0 6px 14px rgba(2,6,23,0.06); }
+}
+
+/* Larger desktop: subtle spacing increase and hover affordance */
+@media (min-width:1000px){
+  body{ padding:28px; padding-bottom:48px; }
+  .cards-container{ gap: var(--gap-desktop); }
+  .card{ padding:16px; border-radius:14px; }
+  button{ padding:10px 14px; font-size: var(--ui-font-md); }
+  #editQuestionsBtn, #refreshBtn{ position: static; width: auto; }
+}
+
+/* Print adjustments */
+@media print{
+  body{ background:#fff; color:#000; padding:8mm; }
+  .cards-container{ grid-template-columns: 1fr !important; gap: 8px; }
+  .card{ box-shadow:none; border:1px solid #ddd; }
+  button{ display:none; }
+}
+  </style>
+</head>
+<body>
+
+  <!-- כפתור חזרה -->
+  <button onclick="window.location.href='intake.html'"
+          style="background:#2563eb; color:white; margin-bottom:15px;">
+    ↩️ חזרה לדף הראשי
+  </button>
+
+  <!-- כפתור עריכה -->
+  <div style="text-align:center; margin-bottom:20px;">
+    <button id="editQuestionsBtn"
+            style="background:#f59e0b; color:white;">
+      ✏️ עריכה
+    </button>
+  </div>
+
+  <h1>סיכומי שאלוני אינטייק</h1>
+  <button id="refreshBtn">רענן נתונים</button>
+
+  <div class="cards-container" id="cardsContainer"></div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const supabaseUrl = "https://tgfqsmarvznpzwdixvye.supabase.co";
+    const supabaseKey =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnZnFzbWFydnpucHp3ZGl4dnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3OTM1NzEsImV4cCI6MjA3NjM2OTU3MX0.ui5rHWh8KgSmhYrl_unozb9rwAaZQeTNEeMZF63lhYM";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const container = document.getElementById("cardsContainer");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const editBtn = document.getElementById("editQuestionsBtn");
+
+    async function loadCards() {
+      container.innerHTML = "<p>⏳ טוען נתונים...</p>";
+      const { data, error } = await supabase
+        .from("intake_forms")
+        .select("*")
+        .order("id", { ascending: false });
+
+      if (error) {
+        container.innerHTML = "<p>❌ שגיאה בטעינה.</p>";
+        return;
+      }
+
+      container.innerHTML = ""; // נקה לפני טעינה חדשה
+      if (data.length === 0) {
+        container.innerHTML = "<p>אין נתונים להצגה.</p>";
+        return;
+      }
+
+      data.forEach(row => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <h3>${row.full_name}</h3>
+          <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
+        `;
+
+        card.addEventListener("click", () => {
+          if (card.classList.contains("open")) {
+            card.classList.remove("open");
+            card.innerHTML = `
+              <h3>${row.full_name}</h3>
+              <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
+            `;
+          } else {
+            card.classList.add("open");
+            const answersText = Object.entries(row.answers)
+              .map(([q, a]) => `• ${q}:\n${a}`)
+              .join("\n\n");
+            card.innerHTML = `
+              <h3>${row.full_name}</h3>
+              <p>${new Date(row.created_at).toLocaleString("he-IL")}</p>
+              <pre>${answersText}</pre>
+            `;
+          }
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    // רענון נתונים בלחיצה
+    refreshBtn.onclick = () => loadCards();
+
+    // כפתור עריכה — מעבר לדף העריכה
+    editBtn.onclick = () => {
+      window.location.href = "edit_questions.html";
+    };
+
+    // טען את הנתונים עם פתיחת הדף
+    loadCards();
+  </script>
+
+</body>
+</html>

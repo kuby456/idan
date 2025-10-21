@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>עריכת שאלות הטופס</title>
+  <style>
+   :root{
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #2563eb;
+  --accent-2: #22c55e;
+  --danger: #ef4444;
+  --radius: 12px;
+  --shadow: 0 10px 30px rgba(15,23,42,0.06);
+  --soft-shadow: 0 6px 18px rgba(15,23,42,0.04);
+  --max-width: 1100px; /* a bit wider for desktop */
+  --gap: 14px;
+  --touch-padding: 14px;
+  --ui-size-lg: 16px;
+  --ui-size-md: 14px;
+  --ui-size-sm: 13px;
+}
+
+/* בסיס ו-reset קל */
+*{box-sizing:border-box}
+html,body{
+  height:100%;
+  margin:0;
+  padding:0;
+  direction:rtl;
+  font-family: "Alef", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg), #f8fbff);
+  color:#071032;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-size: var(--ui-size-md);
+  -webkit-text-size-adjust:100%;
+}
+
+/* מרכז את התוכן ומגדיר קונטיינר רספונסיבי */
+.app-wrapper{
+  min-height:100vh;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:32px;
+  gap:24px;
+  width:100%;
+}
+
+/* layout grid: main + sidebar on wide screens */
+.container{
+  width:100%;
+  max-width:var(--max-width);
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:24px;
+  align-items:start;
+}
+
+/* desktop: show actions sidebar */
+@media (min-width:1000px){
+  .container{
+    grid-template-columns: 1fr 320px;
+    align-items:start;
+  }
+}
+
+/* כותרת עליונה */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:0 6px;
+}
+.header h2{
+  margin:0;
+  font-size:1.6rem;
+  font-weight:700;
+  color:#071032;
+  text-align:right;
+}
+
+/* כפתורי עליון — יושבים בסטאק בימין/שמאל בהתאם לגודל */
+.header .top-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* רשימת השאלות */
+#questionsList{
+  width:100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(250,250,255,0.98));
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--soft-shadow);
+  border:1px solid rgba(7,16,50,0.04);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  min-height:120px;
+}
+
+/* מצב טעינה/שגיאה פשוט */
+#questionsList p{ margin:0; color:var(--muted); padding:8px 4px; font-size:var(--ui-size-md); }
+
+/* פריט שאלה - responsive */
+.question-item{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  background: linear-gradient(180deg, #fff, #fbfdff);
+  border-radius:10px;
+  padding:10px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.03);
+  border:1px solid rgba(7,16,50,0.03);
+}
+
+/* בכרזה גדולה - שורה כפולה בין טקסטאראיה וכפתורים */
+.question-item .left{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  flex:1;
+}
+
+/* טקסטאאראה מותאמת */
+.question-item textarea{
+  width:100%;
+  flex:1;
+  min-height:72px;
+  max-height:360px;
+  resize:vertical;
+  padding:12px;
+  font-size:var(--ui-size-md);
+  line-height:1.5;
+  border-radius:8px;
+  border:1px solid #e6e9ef;
+  background:#fff;
+  color:#071032;
+  outline:none;
+  transition: box-shadow .12s ease, border-color .12s ease;
+  text-align:right;
+}
+
+/* תווית קטנה מעל textarea (אם רוצים להוסיף) */
+.question-item label{
+  font-size:var(--ui-size-sm);
+  color:var(--muted);
+  margin-bottom:4px;
+}
+
+/* פוקוס */
+.question-item textarea:focus{
+  border-color: rgba(37,99,235,0.9);
+  box-shadow: 0 8px 22px rgba(37,99,235,0.07);
+}
+
+/* מחיקה/אפשרויות בצד (כפתורים קומפקטיים) */
+.question-item .controls{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  flex: 0 0 auto;
+  align-items:stretch;
+}
+
+/* כפתור מחיקה קטן (מקורי) */
+.question-item .delete-btn{
+  background: linear-gradient(180deg, rgba(239,68,68,0.06), rgba(239,68,68,0.04));
+  color: var(--danger);
+  border: 1px solid rgba(239,68,68,0.12);
+  padding:10px 12px;
+  font-size:var(--ui-size-md);
+  border-radius:8px;
+  cursor:pointer;
+  height:44px;
+  transition: transform .08s ease, box-shadow .08s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+/* כפתור גרירה/העתקה / reorder placeholder */
+.question-item .drag-handle{
+  background:transparent;
+  border:1px dashed rgba(7,16,50,0.04);
+  color:var(--muted);
+  padding:8px 10px;
+  border-radius:8px;
+  font-size:var(--ui-size-sm);
+  height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* פעולות על כפתור מחיקה */
+.question-item .delete-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239,68,68,0.06);
+}
+
+/* כפתורים תחתונים / sidebar actions */
+.actions-panel{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:16px;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), #fff);
+  box-shadow: var(--soft-shadow);
+  border:1px solid rgba(7,16,50,0.04);
+  align-self:flex-start;
+}
+
+/* כפתורים גדולים */
+.actions-panel .add-btn,
+.actions-panel .save-btn,
+.actions-panel .back-btn{
+  width:100%;
+  border-radius:10px;
+  padding:12px 14px;
+  font-size:var(--ui-size-md);
+  font-weight:700;
+  border:none;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  transition: transform .08s ease, box-shadow .08s ease, opacity .08s ease;
+  min-height:48px;
+}
+
+/* כפתור הוספה */
+.actions-panel .add-btn{
+  background: linear-gradient(90deg, #06b6d4, #3b82f6);
+  color:white;
+  box-shadow: 0 10px 26px rgba(59,130,246,0.12);
+}
+
+/* שמירה */
+.actions-panel .save-btn{
+  background: linear-gradient(90deg, var(--accent-2), #16a34a);
+  color:white;
+  box-shadow: 0 10px 26px rgba(34,197,94,0.12);
+}
+
+/* חזרה */
+.actions-panel .back-btn{
+  background: transparent;
+  color: var(--accent);
+  border:1px solid rgba(37,99,235,0.08);
+}
+
+/* hover effects */
+.actions-panel .add-btn:hover,
+.actions-panel .save-btn:hover,
+.actions-panel .back-btn:hover{
+  transform: translateY(-2px);
+  opacity:0.98;
+}
+
+/* תיבת הודעות */
+#messageBox{
+  display:none;
+  margin-top:6px;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:700;
+  font-size:14px;
+  box-shadow:var(--soft-shadow);
+}
+
+/* סוגי הודעה */
+#messageBox.success{
+  background: rgba(34,197,94,0.08);
+  color: #065f46;
+  border: 1px solid rgba(34,197,94,0.12);
+}
+#messageBox.error{
+  background: rgba(239,68,68,0.06);
+  color: #9b1c1c;
+  border: 1px solid rgba(239,68,68,0.12);
+}
+
+/* ריספונסיב: קטנים - טלפון */
+@media (max-width:720px){
+  .app-wrapper{ padding:18px; }
+  .container{ gap:12px; grid-template-columns: 1fr; padding-bottom: 76px; } /* space for bottom bar */
+  #questionsList{ padding:12px; }
+  .question-item{
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+  }
+  .question-item .controls{
+    flex-direction:row;
+    gap:8px;
+  }
+  .question-item .controls > *{
+    flex:1 1 0;
+    height:44px;
+  }
+
+  /* actions panel becomes a sticky bottom bar for fast access */
+  .actions-panel{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    margin:0;
+    padding:10px;
+    border-radius:12px 12px 0 0;
+    display:flex;
+    flex-direction:row;
+    gap:8px;
+    align-items:center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,255,0.98));
+    border-top:1px solid rgba(7,16,50,0.04);
+    box-shadow: 0 -8px 30px rgba(2,6,23,0.06);
+    z-index:30;
+  }
+  .actions-panel .add-btn,
+  .actions-panel .save-btn,
+  .actions-panel .back-btn{
+    flex:1;
+    min-height:48px;
+    padding:12px;
+    font-size:var(--ui-size-sm);
+  }
+  /* make delete button full width on mobile so it's easier to tap */
+  .question-item .delete-btn{
+    width:100%;
+    height:44px;
+  }
+}
+
+/* רספונסיב: טאבלט/מחשב קטן */
+@media (min-width:721px) and (max-width:999px){
+  .container{ grid-template-columns: 1fr; }
+  .question-item{ gap:10px; }
+  .actions-panel{ position:static; }
+}
+
+/* נראות להדפסה */
+@media print{
+  body{ background:#fff; color:#000; }
+  .add-btn, .save-btn, .back-btn, .delete-btn, #messageBox, .actions-panel{ display:none !important; }
+  #questionsList{ box-shadow:none; border:none; }
+  .question-item{ page-break-inside:avoid; }
+}
+
+/* Accessibility: focus styles */
+button:focus, textarea:focus, .delete-btn:focus{
+  outline: 3px solid rgba(37,99,235,0.14);
+  outline-offset: 2px;
+}
+
+/* Utility small helpers */
+.small-muted{ color:var(--muted); font-size:var(--ui-size-sm); }
+.center{ text-align:center; }
+
+/* ===== עיצוב כפתורים תחתונים ===== */
+.add-btn,
+.save-btn,
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 14px 20px;
+  width: 100%;
+  max-width: 400px;
+  margin: 8px auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* 🟦 כפתור הוספה */
+.add-btn {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  color: #fff;
+}
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.2);
+}
+
+/* 🟩 כפתור שמירה */
+.save-btn {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  color: #fff;
+}
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(22, 163, 74, 0.2);
+}
+
+/* 🔵 כפתור חזרה */
+.back-btn {
+  background: transparent;
+  color: #2563eb;
+  border: 2px solid rgba(37, 99, 235, 0.3);
+}
+.back-btn:hover {
+  background: rgba(37, 99, 235, 0.05);
+  transform: translateY(-2px);
+}
+
+/* 📱 התאמה למובייל */
+@media (max-width: 720px) {
+  .add-btn,
+  .save-btn,
+  .back-btn {
+    width: 100%;
+    font-size: 15px;
+    padding: 12px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <h2>עריכת שאלות הטופס</h2>
+
+  <div id="questionsList">⏳ טוען שאלות...</div>
+
+  <button class="add-btn" id="addQuestion">➕ הוסף שאלה חדשה</button>
+  <br>
+  <button class="save-btn" id="saveChanges">💾 שמור שינויים</button>
+  <button class="back-btn" onclick="window.location.href='summaries.html'">↩️ חזרה</button>
+
+  <div id="messageBox"></div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const supabaseUrl = "https://tgfqsmarvznpzwdixvye.supabase.co";
+    const supabaseKey =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnZnFzbWFydnpucHp3ZGl4dnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3OTM1NzEsImV4cCI6MjA3NjM2OTU3MX0.ui5rHWh8KgSmhYrl_unozb9rwAaZQeTNEeMZF63lhYM";
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const list = document.getElementById("questionsList");
+    const addBtn = document.getElementById("addQuestion");
+    const saveBtn = document.getElementById("saveChanges");
+    const messageBox = document.getElementById("messageBox");
+
+    function showMessage(text, type = "success") {
+      messageBox.textContent = text;
+      messageBox.className = type === "success" ? "success" : "error";
+      messageBox.style.display = "inline-block";
+      setTimeout(() => (messageBox.style.display = "none"), 3000);
+    }
+
+    async function loadQuestions() {
+      list.innerHTML = "<p>⏳ טוען שאלות...</p>";
+      const { data, error } = await supabase.from("intake_questions").select("*").order("id");
+      if (error) {
+        list.innerHTML = "<p>❌ שגיאה בטעינה.</p>";
+        return;
+      }
+
+      list.innerHTML = "";
+      data.forEach(q => {
+        const div = document.createElement("div");
+        div.className = "question-item";
+        div.innerHTML = `
+          <textarea data-id="${q.id}">${q.question_text}</textarea>
+          <button class="delete-btn" data-id="${q.id}">🗑️</button>
+        `;
+        list.appendChild(div);
+      });
+
+      // מאזין למחיקות
+      list.querySelectorAll(".delete-btn").forEach(btn => {
+        btn.onclick = async () => {
+          const id = btn.dataset.id;
+          await supabase.from("intake_questions").delete().eq("id", id);
+          showMessage("❌ השאלה נמחקה בהצלחה", "error");
+          loadQuestions();
+        };
+      });
+    }
+
+    // הוספת שאלה חדשה
+    addBtn.onclick = async () => {
+      const { error } = await supabase.from("intake_questions").insert([{ question_text: "שאלה חדשה" }]);
+      if (error) {
+        showMessage("שגיאה בהוספה", "error");
+      } else {
+        showMessage("✅ שאלה נוספה בהצלחה!");
+        loadQuestions();
+      }
+    };
+
+    // שמירת כל השאלות הקיימות (כולל שינוי טקסט)
+    saveBtn.onclick = async () => {
+      const textareas = list.querySelectorAll("textarea");
+      for (const ta of textareas) {
+        await supabase.from("intake_questions").update({ question_text: ta.value }).eq("id", ta.dataset.id);
+      }
+      showMessage("✅ כל השאלות נשמרו בהצלחה!");
+    };
+
+    loadQuestions();
+  </script>
+</body>
+</html>

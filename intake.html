@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>טופס אינטייק</title>
+  <style>
+    :root{
+  --bg-color-1: #f7fbff;
+  --bg-color-2: #eef6ff;
+  --card-bg: #ffffff;
+  --accent: #2563eb; /* כחול */
+  --accent-2: #22c55e; /* ירוק */
+  --muted: #6b7280;
+  --danger: #ef4444;
+  --radius: 12px;
+  --page-padding: 20px;
+  --max-width: 760px;
+  --shadow: 0 6px 18px rgba(22, 28, 37, 0.08);
+  --glass: rgba(255,255,255,0.6);
+}
+
+/* בסיס */
+*{box-sizing:border-box}
+html,body{
+  height:100%;
+  margin:0;
+  padding:0;
+  direction: rtl; /* בטחון כפול - HTML כבר מציג dir=rtl */
+  font-family: "Segoe UI", "Helvetica Neue", Arial, "Alef", system-ui, -apple-system;
+  background: linear-gradient(180deg, var(--bg-color-1), var(--bg-color-2));
+  color: #0f172a;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+body {
+  display: block;
+  margin: 0;
+  padding: 40px 20px;  /* ריווח נעים מכל הצדדים */
+  background: linear-gradient(180deg, var(--bg-color-1), var(--bg-color-2));
+  color: #0f172a;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, "Alef", system-ui, -apple-system;
+  overflow-x: hidden; /* אין גלילה ימינה */
+}
+
+
+
+#formScreen, #nameScreen {
+  margin: 0 auto;
+  box-sizing: border-box;
+  border-radius: var(--radius);
+  max-width: var(--max-width);
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), var(--glass));
+  padding: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15,23,42,0.04);
+}
+
+/* כרטיס עבור כל מסך */
+#nameScreen, #formScreen{
+  width:100%;
+  max-width: var(--max-width);
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), var(--glass));
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(15,23,42,0.04);
+}
+
+/* כותרות וטקסט */
+h2{
+  margin:0 0 8px 0;
+  font-size:1.6rem;
+  letter-spacing:0.2px;
+}
+p{
+  margin:0 0 18px 0;
+  color:var(--muted);
+  line-height:1.45;
+}
+
+/* הסתרה פשוטה */
+.hidden{ display:none !important; }
+
+/* שדות קלט */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea{
+  width:100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  border-radius:10px;
+  border: 1px solid #e6e9ef;
+  background: #fff;
+  outline: none;
+  color: #0b1220;
+  transition: box-shadow .12s ease, border-color .12s ease, transform .06s ease;
+  text-align: right;
+}
+
+/* שדה טקסט רב שורות */
+textarea{
+  min-height:88px;
+  line-height:1.5;
+  resize: none; /* מופעל גם ב-JS */
+  white-space: pre-wrap;
+}
+
+/* מצב פוקוס */
+input:focus, textarea:focus{
+  border-color: rgba(37,99,235,0.85);
+  box-shadow: 0 6px 18px rgba(37,99,235,0.08);
+}
+
+/* כפתורים כלליים */
+button{
+  cursor:pointer;
+  border: none;
+  outline: none;
+  transition: transform .08s ease, box-shadow .08s ease, opacity .08s ease;
+  font-weight:600;
+}
+
+/* כפתור המשך */
+#startBtn{
+  background: linear-gradient(90deg, var(--accent), #3b82f6);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 16px;
+  box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+}
+
+/* כפתור שליחת טופס */
+form button[type="submit"]{
+  background: linear-gradient(90deg, var(--accent-2), #16a34a);
+  color:white;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 16px;
+  display:inline-block;
+}
+
+/* כפתור מנהל (הוחלף ב־adminBox אך נמקד סטייל) */
+#adminAccess{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:flex-end;
+  margin-top:14px;
+}
+
+/* כפתור עגול לאישור מנהל */
+#adminSubmit{
+  width:50px;
+  height:50px;
+  display:inline-grid;
+  place-items:center;
+  border-radius:50%;
+  background: var(--accent-2);
+  color:#fff;
+  font-size:20px;
+  box-shadow: 0 8px 18px rgba(34,197,94,0.12);
+  border: none;
+}
+
+/* כפתור כניסת מנהל המקורי (לא בשימוש אם הוחלף) */
+#adminBtn{
+  background:transparent;
+  color:var(--accent);
+  border-radius:8px;
+  padding:8px 12px;
+  border:1px dashed rgba(37,99,235,0.12);
+}
+
+/* כפתור עליון שמאלי (חזרה) */
+.top-left-btn{
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 9999;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 24px rgba(2,6,23,0.12);
+  border: 1px solid rgba(2,6,23,0.06);
+  font-size:18px;
+}
+
+/* סטייל לשאלות */
+#questionsContainer{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  margin-bottom:18px;
+  margin-top:8px;
+}
+.question{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.question label{
+  font-weight:700;
+  font-size:15px;
+  color:#071032;
+  margin-bottom:2px;
+}
+
+/* שגיאות */
+input.error, textarea.error{
+  border-color: rgba(239,68,68,0.95);
+  box-shadow: 0 6px 18px rgba(239,68,68,0.06);
+}
+
+/* הודעות מנהל ושגיאות */
+#adminMessage{
+  font-size:14px;
+}
+.form-message{
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:8px;
+  font-weight:600;
+}
+.form-message.success{
+  background: rgba(34,197,94,0.08);
+  color: #065f46;
+  border: 1px solid rgba(34,197,94,0.12);
+}
+.form-message.error{
+  background: rgba(239,68,68,0.06);
+  color: #9b1c1c;
+  border: 1px solid rgba(239,68,68,0.12);
+}
+
+/* התאמות למובייל */
+@media (max-width:560px){
+  body{ padding:20px 12px; }
+  #nameScreen, #formScreen{
+    padding:18px;
+    border-radius:10px;
+  }
+  h2{ font-size:1.35rem; }
+  input[type="text"], textarea{ font-size:15px; padding:10px; }
+  #adminAccess{ flex-direction:column; align-items:stretch; }
+  #adminSubmit{ width:48px; height:48px; align-self:flex-start; }
+  .top-left-btn{ left:12px; top:12px; padding:8px; }
+}
+
+/* איפון: כפתורים קלים ללחיצה */
+button:active{ transform: translateY(1px) scale(0.997); opacity:0.98; }
+
+/* נראות טובה להדפסה (אופציונלי) */
+@media print{
+  body{ background: #fff; }
+  .top-left-btn, #adminAccess { display:none; }
+  #nameScreen, #formScreen{ box-shadow:none; border:none; }
+}
+
+#formScreen {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+#questionsContainer {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+  </style>
+</head>
+<body>
+    <!-- כפתור עליון שמאלי -->
+<!-- כפתור עליון שמאלי -->
+<button id="topLeftBtn" title="חזרה" class="top-left-btn hidden">🔙</button>
+
+<!-- מסך הכנסת שם -->
+<div id="nameScreen">
+  <h2>ברוך הבא</h2>
+  <p>אנא הזן את שמך המלא כדי להתחיל את השאלון</p>
+  <input type="text" id="fullName" placeholder="שם מלא" required />
+  <br><br>
+  <div>
+    <button id="startBtn">המשך</button>
+  </div>
+  <br>
+  <div style="display:flex; flex-direction:column; align-items:center;">
+    <button id="adminBtn">כניסת מנהל</button>
+  </div>
+</div>
+
+<!-- מסך שאלון -->
+<div id="formScreen" class="hidden">  <!-- שים לב ל־class="hidden" -->
+  <h2>טופס אינטייק</h2>
+  <form id="intakeForm">
+    <div id="questionsContainer"></div>
+    <button type="submit">שלח</button>
+  </form>
+</div>
+
+
+ <script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  const supabaseUrl = "https://tgfqsmarvznpzwdixvye.supabase.co";
+  const supabaseKey =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnZnFzbWFydnpucHp3ZGl4dnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3OTM1NzEsImV4cCI6MjA3NjM2OTU3MX0.ui5rHWh8KgSmhYrl_unozb9rwAaZQeTNEeMZF63lhYM";
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  const nameScreen = document.getElementById("nameScreen");
+  const formScreen = document.getElementById("formScreen");
+  const startBtn = document.getElementById("startBtn");
+  const adminBtn = document.getElementById("adminBtn");
+  const fullNameInput = document.getElementById("fullName");
+  const form = document.getElementById("intakeForm");
+  const questionsContainer = document.getElementById("questionsContainer");
+  const topLeftBtn = document.getElementById("topLeftBtn");
+
+  // ביטול resize לתיבות טקסט
+  const style = document.createElement("style");
+  style.innerHTML = `textarea { resize: none !important; }`;
+  document.head.appendChild(style);
+
+// רשימת שאלות בסיס (תמיד תופיע)
+const baseQuestions = [
+  "טלפון נייד",
+  "כתובת email",
+  "תאריך לידה",
+  "מצב משפחתי",
+  "מקצוע / לימודים (תחום)",
+  "בזמני הפנוי",
+  "איך היית מתאר את מערכת התמיכה שלך (משפחה, חברים, קהילה)?",
+  "איך הרגלי השינה שלך?",
+  "האם נוטל טיפול תרופתי קבוע?",
+  "האם יש היסטוריה של קשיים רגשיים, חרדות, דיכאון או טראומה?",
+  "מתי ו/או-איך החלה הבעיה?",
+  "מהם הקשיים המרכזיים שאת/ה מתמודד/ת איתם כיום?",
+  "מהו הטריגר המעורר את הקושי?",
+  "מה הביא אותך לפנות לטיפול דווקא עכשיו?",
+  "אילו נסיונות עשית על מנת לשנות את המצב?",
+  "האם היו נסיונות קודמים לטפל בבעיה? אם כן מהם?",
+  "מה מיטיב את חייך? מה מחזק אותך ובפרט כשקשה לך?",
+  "האם יש אנשים נוספים במשפחה שסובלים מבעיות דומות?",
+  "מה חשוב לי לדעת עליך כבר עכשיו כדי שהמפגש יהיה לך נוח ובטוח?",
+  "מה היית רוצה להשיג בטיפול? איך תדע שהטיפול עוזר לך?"
+];
+
+// כאן נאסוף גם את השאלות מה־Supabase
+let combinedQuestions = [];
+
+// טעינת שאלות נוספות מה־Supabase
+async function loadQuestionsFromDB() {
+  try {
+    const { data, error } = await supabase
+      .from("intake_questions")
+      .select("*")
+      .order("id");
+
+    if (error) {
+      console.error("שגיאה בטעינה מה־Supabase:", error);
+      return baseQuestions; // fallback אם יש שגיאה
+    }
+
+    // שאלות חדשות בלבד (למנוע כפילויות אם מישהו הוסיף אותן שוב)
+    const dbQuestions = data.map(q => q.question_text);
+    const uniqueDB = dbQuestions.filter(q => !baseQuestions.includes(q));
+
+    // איחוד הרשימות
+    combinedQuestions = [...baseQuestions, ...uniqueDB];
+    console.log("סה״כ שאלות:", combinedQuestions.length);
+
+    // יצירת השאלון הדינמי
+    renderQuestions();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// פונקציה שמציירת את השאלון על המסך
+function renderQuestions() {
+  questionsContainer.innerHTML = "";
+  combinedQuestions.forEach(q => {
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `
+      <label>${q}</label>
+      <textarea required placeholder="כתוב תשובה כאן"></textarea>
+    `;
+    questionsContainer.appendChild(div);
+  });
+}
+
+// קריאה בעת טעינת הדף
+await loadQuestionsFromDB();
+
+
+  // תיבת קוד מנהל (רק בדף הראשון)
+  const adminBox = document.createElement("div");
+  adminBox.innerHTML = `
+    <div id="adminAccess" style="margin-top:20px;">
+      <input type="password" id="adminCodeInput" placeholder="🔒 הזן קוד מנהל לגישה"
+             style="padding:10px; text-align:right; border-radius:8px; border:1px solid #ccc; font-size:16px; direction:rtl;">
+      <button id="adminSubmit"
+              style="padding:10px; border:none; background:#22c55e; color:#fff;
+                     border-radius:50%; cursor:pointer; width:50px; height:50px; font-size:22px;">
+        ✅
+      </button>
+      <p id="adminMessage" style="color:red; margin-top:10px;"></p>
+    </div>
+  `;
+  adminBtn.replaceWith(adminBox);
+
+  const adminCodeInput = document.getElementById("adminCodeInput");
+  const adminSubmit = document.getElementById("adminSubmit");
+  const adminMessage = document.getElementById("adminMessage");
+
+  // אם כבר הוזן קוד פעם אחת
+  if (localStorage.getItem("admin_verified") === "true") {
+    adminMessage.style.color = "green";
+    adminMessage.innerText = "✔️ גישה מאושרת";
+  }
+
+  // בדיקת קוד
+  adminSubmit.onclick = () => {
+    const code = adminCodeInput.value.trim();
+    if (code === "15435000") {
+      localStorage.setItem("admin_verified", "true");
+      adminMessage.style.color = "green";
+      adminMessage.innerText = "✔️ כניסה מאושרת!";
+      setTimeout(() => (window.location.href = "summaries.html"), 1000);
+    } else {
+      adminMessage.style.color = "red";
+      adminMessage.innerText = "❌ קוד שגוי, נסה שוב.";
+    }
+  };
+
+  // מעבר לשאלון
+  startBtn.onclick = () => {
+    const fullName = fullNameInput.value.trim();
+    if (!fullName) {
+      fullNameInput.classList.add("error");
+      return;
+    }
+
+    localStorage.setItem("intake_full_name", fullName);
+    fullNameInput.classList.remove("error");
+
+    // מעבר בין המסכים
+    nameScreen.classList.add("hidden");
+    formScreen.classList.remove("hidden");
+
+    // מציג את הכפתור העליון
+    topLeftBtn.classList.remove("hidden");
+  };
+
+  // כפתור חזרה 🔙
+  topLeftBtn.onclick = () => {
+    formScreen.classList.add("hidden");
+    nameScreen.classList.remove("hidden");
+    topLeftBtn.classList.add("hidden");
+  };
+
+  form.onsubmit = async (e) => {
+  e.preventDefault();
+  const fullName = localStorage.getItem("intake_full_name");
+  const answers = {};
+  let valid = true;
+
+  const textareas = form.querySelectorAll("textarea");
+  textareas.forEach((ta, i) => {
+    if (!ta.value.trim()) {
+      ta.classList.add("error");
+      valid = false;
+    } else {
+      ta.classList.remove("error");
+      answers[combinedQuestions[i]] = ta.value.trim(); // ✅ תוקן כאן
+    }
+  });
+
+  if (!valid) return;
+
+  const now = new Date();
+  const date = now.toLocaleDateString("he-IL");
+  const time = now.toLocaleTimeString("he-IL");
+
+  // שמירה בלוקל סטורג'
+  const history = JSON.parse(localStorage.getItem("intake_history") || "[]");
+  history.push({ fullName, date, time, answers });
+  localStorage.setItem("intake_history", JSON.stringify(history));
+
+  // שליחה ל-Supabase
+  const { error } = await supabase
+    .from("intake_forms")
+    .insert([{ full_name: fullName, answers }]);
+
+  const msg = document.createElement("div");
+  msg.textContent = error
+    ? "❌ שגיאה בשליחה, נסה שוב."
+    : "✅ נשלח בהצלחה!";
+  msg.style.color = error ? "red" : "green";
+  msg.style.fontWeight = "bold";
+  msg.style.marginTop = "15px";
+  form.appendChild(msg);
+
+  if (!error) {
+    setTimeout(() => {
+      msg.remove();
+      form.reset();
+      formScreen.classList.add("hidden");
+      nameScreen.classList.remove("hidden");
+      topLeftBtn.classList.add("hidden");
+    }, 5000);
+  }
+};
+
+</script>
+
+</body>
+</html>
