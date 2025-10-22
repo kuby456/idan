@@ -335,6 +335,77 @@ button:focus, .card:focus{
   100% { opacity: 0; transform: translate(-50%, -40%); }
 }
 
+.answer-block {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+  /* ✨ פתיחה אוטומטית לפי כמות טקסט */
+  max-height: none;        /* אין מגבלת גובה */
+  min-height: auto;        /* גובה בהתאם לתוכן */
+  overflow-y: visible;     /* בלי גלילה פנימית */
+}
+
+.answer-block:nth-child(even) {
+  background: #f1f5f9; /* גוון אפור מעט שונה */
+}
+
+/* ✅ קו תחתון מקווקו מתחת לכל שאלה */
+.answer-block .question {
+  font-size: 23px;
+  font-weight: 900;
+  color: #1e3a8a;
+  margin-bottom: 6px;
+  border-bottom: 3px dashed #9ca3af; /* קו מקווקו בצבע אפור בינוני */
+  padding-bottom: 6px;
+}
+
+.answer-block .answer {
+  font-size: 20px;
+  font-weight: bolder;
+  color: #4e4d4d;
+  white-space: pre-wrap;
+}
+
+/* ✅ עיצוב פס גלילה לדפדפני WebKit (כרום / Edge / ספארי) */
+.answer-block::-webkit-scrollbar {
+  width: 6px;
+}
+.answer-block::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+.answer-block::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+
+/* ✅ מכולת כל השאלות בתוך כל סיכום (כל השאלון כולו) */
+.card.open {
+  max-height: 400px;        /* גובה קבוע לשאלון שלם */
+  overflow-y: auto;         /* גלילה אנכית */
+  padding: 14px 12px 16px;  /* ריווח פנימי נעים */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;                /* ✅ רווח בין הבלוקים של השאלות */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f9fafb;
+}
+
+/* עיצוב פס גלילה (כרום/Edge) */
+.card.open::-webkit-scrollbar {
+  width: 8px;
+}
+.card.open::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+.card.open::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+
+
   </style>
 </head>
 <body>
@@ -405,14 +476,24 @@ button:focus, .card:focus{
             `;
           } else {
             card.classList.add("open");
-            const answersText = Object.entries(row.answers)
-              .map(([q, a]) => `• ${q}:\n${a}`)
-              .join("\n\n");
-            card.innerHTML = `
-              <h3>${row.full_name}</h3>
-              <p>${new Date(row.created_at).toLocaleString("he-IL")}</p>
-              <pre>${answersText}</pre>
-            `;
+          // ✅ עיצוב חדש עם בלוקים ברורים
+const answersHTML = Object.entries(row.answers)
+  .map(
+    ([q, a]) => `
+      <div class="answer-block">
+        <div class="question"> ${q}</div>
+        <div class="answer">${a}</div>
+      </div>
+    `
+  )
+  .join("");
+
+           card.innerHTML = `
+  <h3>${row.full_name}</h3>
+  <p>${new Date(row.created_at).toLocaleString("he-IL")}</p>
+  ${answersHTML}
+`;
+
           }
         });
 
