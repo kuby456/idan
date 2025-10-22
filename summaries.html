@@ -239,37 +239,77 @@ button:focus, .card:focus{
     border-radius: 12px;
   }
 
-  /* Place edit + refresh as a sticky bottom action bar for thumbs */
-  #editQuestionsBtn,
-  #refreshBtn{
-    position: fixed;
-    bottom: 16px;
-    z-index: 60;
-    box-shadow: 0 12px 30px rgba(2,6,23,0.12);
-  }
+ /* ✨ ממקם את כפתורי העריכה והרענון קבועים בראש הדף */
+#editQuestionsBtn,
+#refreshBtn {
+  top: 10px;          /* 📍 מעלה אותם למעלה */
+  z-index: 100;       /* מעל כל האלמנטים האחרים */
+  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+}
 
-  /* Edit on the right, refresh on the left (RTL friendly) */
-  #editQuestionsBtn{
-    right: 16px;
-    left: auto;
-    width: calc(50% - 26px);
-    max-width: 320px;
-    border-radius: 12px;
-    display: inline-flex;
-    justify-content:center;
-  }
-  #refreshBtn{
-    left: 16px;
-    right: auto;
-    width: calc(50% - 26px);
-    max-width: 320px;
-    border-radius: 12px;
-    display:inline-flex;
-    justify-content:center;
-    background: #fff;
-    color: var(--accent);
-    border: 1px solid rgba(37,99,235,0.12);
-  }
+/* 🟦 יישור נכון ברוחב מסך נייד */
+#editQuestionsBtn {
+  right: 16px;        /* בצד ימין */
+  left: auto;
+  width: calc(50% - 26px);
+  max-width: 320px;
+  background: #f59e0b;
+  color: white;
+}
+
+#refreshBtn {
+  left: 16px;         /* בצד שמאל */
+  right: auto;
+  width: calc(50% - 26px);
+  max-width: 320px;
+  background: #fff;
+  color: var(--accent);
+  border: 1px solid rgba(37,99,235,0.12);
+  box-shadow: 0 6px 14px rgba(2,6,23,0.06);
+}
+/* 🔹 עיצוב הסרגל העליון */
+.top-buttons {
+  display: flex;
+  justify-content: center;    /* מרכז את הכפתורים */
+  align-items: center;
+  gap: 12px;                  /* רווח ביניהם */
+  margin-bottom: 20px;
+  flex-wrap: wrap;            /* לשבירה יפה במסכים קטנים */
+}
+
+/* 🔹 עיצוב אחיד לשני הכפתורים */
+.top-buttons button {
+  font-family: "Heebo", sans-serif;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* ✏️ כפתור עריכה */
+#editQuestionsBtn {
+  background: #f59e0b;
+  color: white;
+}
+#editQuestionsBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(245,158,11,0.3);
+}
+
+/* 🔄 כפתור רענון */
+#refreshBtn {
+  background: #2563eb;
+  color: white;
+}
+#refreshBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(37,99,235,0.3);
+}
+
 
   /* hide the centered edit button's container spacing (if any) by reducing margins */
   #editQuestionsBtn[style], body > div[style] { /* best-effort: don't rely on inline styles but keep safe */
@@ -421,22 +461,35 @@ button:focus, .card:focus{
     ↩️ חזרה לדף הראשי
   </button>
 
-  <!-- כפתור עריכה -->
-  <div style="text-align:center; margin-bottom:20px;">
-    <button id="editQuestionsBtn"
-            style="background:#f59e0b; color:white;">
-      ✏️ אוסף/מחק שאלות
-    </button>
-  </div>
+  <!-- 🔘 סרגל עליון עם כפתורים -->
+<div class="top-buttons">
+  <button id="editQuestionsBtn">✏️ אוסף/מחק שאלות</button>
+  <button id="refreshBtn">🔄 רענן נתונים</button>
+</div>
 
-  <h1>סיכומי שאלוני אינטייק</h1>
-  <button id="refreshBtn">רענן נתונים</button>
 <!-- 🔘 כפתורי מחיקה -->
 <div style="text-align:center; margin-bottom:20px;">
   <!-- 🗑️ כפתור מחיקה ראשי -->
   <button id="deleteModeBtn" style="background:#ef4444; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:bold; cursor:pointer;">
     🗑️ מחק שאלונים
   </button>
+
+<!-- 🖨️ כפתורי מצב הדפסה -->
+<button id="printModeBtn"
+        style="background:#16a34a; color:white; border:none; padding:10px 16px;
+               border-radius:10px; font-weight:bold; cursor:pointer; margin-right:6px; margin-top: 10px;">
+  🖨️ מצב הדפסה
+</button>
+
+<button id="printSelectedBtn"
+        style="display:none; background:#22c55e; color:white; border:none;
+               padding:10px 16px; border-radius:10px; font-weight:bold;
+               cursor:pointer; margin-right:6px;">
+  🖨️ הדפס נבחרים
+</button>
+  <h1>סיכומי שאלוני אינטייק</h1>
+
+
 
   <!-- ✔️ כפתור בחר הכול (מופיע רק במצב מחיקה) -->
   <button id="selectAllBtn" style="display:none; background:#9ca3af; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:bold; cursor:pointer; margin-right:6px;">
@@ -461,6 +514,28 @@ const deleteModeBtn = document.getElementById("deleteModeBtn");
 const selectAllBtn = document.getElementById("selectAllBtn");
 
 let deleteMode = false; // מצב מחיקה מופעל או לא
+
+// 💚 מצב הדפסה נפרד (לא קשור למחיקה)
+let printMode = false;
+const printModeBtn = document.getElementById("printModeBtn");
+const printSelectedBtn = document.getElementById("printSelectedBtn");
+
+// מצב הדפסה - הדלקה/כיבוי
+printModeBtn.onclick = () => {
+  printMode = !printMode;
+
+  if (printMode) {
+    printModeBtn.textContent = "❌ סגור מצב הדפסה";
+    printSelectedBtn.style.display = "inline-block";
+    showCenterMessage("🟩 מצב הדפסה הופעל");
+    loadCards(); // לטעון מחדש עם תיבות ירוקות
+  } else {
+    printModeBtn.textContent = "🖨️ מצב הדפסה";
+    printSelectedBtn.style.display = "none";
+    showCenterMessage("מצב הדפסה נסגר");
+    loadCards();
+  }
+};
 
 // 🧭 טעינת הסיכומים
 async function loadCards() {
@@ -488,7 +563,11 @@ async function loadCards() {
 
     // ✳️ מבנה הכרטיס
     card.innerHTML = `
-      ${deleteMode ? `<input type="checkbox" class="delete-checkbox" data-id="${row.id}" style="margin-left:10px; transform:scale(1.3); cursor:pointer;">` : ""}
+${(deleteMode || printMode) ?
+  `<input type="checkbox" class="${deleteMode ? 'delete-checkbox' : 'print-checkbox'}"
+   data-id="${row.id}"
+   style="margin-left:10px; transform:scale(1.3); cursor:pointer; accent-color:${printMode ? '#22c55e' : '#ef4444'};">`
+  : ""}
       <h3 style="display:inline-block; margin-right:6px;">${row.full_name}</h3>
       <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
     `;
@@ -496,12 +575,16 @@ async function loadCards() {
     // ✳️ פתיחה וסגירה
     card.addEventListener("click", (e) => {
       // אם נלחץ על הצ'קבוקס — אל תפתח/סגור
-      if (e.target.classList.contains("delete-checkbox")) return;
+if (e.target.classList.contains("delete-checkbox") || e.target.classList.contains("print-checkbox")) return;
 
       if (card.classList.contains("open")) {
         card.classList.remove("open");
         card.innerHTML = `
-          ${deleteMode ? `<input type="checkbox" class="delete-checkbox" data-id="${row.id}" style="margin-left:10px; transform:scale(1.3); cursor:pointer;">` : ""}
+${(deleteMode || printMode) ?
+  `<input type="checkbox" class="${deleteMode ? 'delete-checkbox' : 'print-checkbox'}"
+   data-id="${row.id}"
+   style="margin-left:10px; transform:scale(1.3); cursor:pointer; accent-color:${printMode ? '#22c55e' : '#ef4444'};">`
+  : ""}
           <h3 style="display:inline-block; margin-right:6px;">${row.full_name}</h3>
           <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
         `;
@@ -520,7 +603,11 @@ async function loadCards() {
           .join("");
 
         card.innerHTML = `
-          ${deleteMode ? `<input type="checkbox" class="delete-checkbox" data-id="${row.id}" style="margin-left:10px; transform:scale(1.3); cursor:pointer;">` : ""}
+${(deleteMode || printMode) ?
+  `<input type="checkbox" class="${deleteMode ? 'delete-checkbox' : 'print-checkbox'}"
+   data-id="${row.id}"
+   style="margin-left:10px; transform:scale(1.3); cursor:pointer; accent-color:${printMode ? '#22c55e' : '#ef4444'};">`
+  : ""}
           <h3 style="display:inline-block; margin-right:6px;">${row.full_name}</h3>
           <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
           ${answersHTML}
@@ -659,6 +746,41 @@ function showCenterMessage(text = "✅ נשלח בהצלחה!") {
     msg.style.display = "none";
   }, 2500);
 }
+// 🖨️ הדפס רק סיכומים מסומנים במצב הדפסה
+printSelectedBtn.onclick = () => {
+  const selectedCards = Array.from(document.querySelectorAll(".print-checkbox:checked"))
+    .map(cb => cb.closest(".card"));
+
+  if (selectedCards.length === 0) {
+    showCenterMessage("❗ לא נבחרו סיכומים להדפסה");
+    return;
+  }
+
+  const printWindow = window.open("", "_blank");
+  const printContent = `
+    <html lang="he" dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>הדפסה של סיכומים נבחרים</title>
+      <style>
+        body { font-family: "Heebo", sans-serif; direction: rtl; padding: 20px; }
+        .card { border:1px solid #ccc; border-radius:10px; padding:14px; margin-bottom:20px; }
+        .question { font-weight:bold; color:#1e3a8a; margin-bottom:6px; border-bottom:1px dashed #9ca3af; padding-bottom:4px; }
+        .answer { color:#333; margin-bottom:8px; white-space:pre-wrap; }
+        hr { border:none; border-top:2px dashed #ccc; margin:20px 0; }
+      </style>
+    </head>
+    <body>
+      <h2 style="text-align:center;">🖨️ סיכומים נבחרים</h2>
+      ${selectedCards.map(c => c.outerHTML + "<hr>").join("")}
+      <script>window.onload = () => window.print();<\/script>
+    </body>
+    </html>
+  `;
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+};
+
 </script>
 
 
