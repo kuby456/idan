@@ -569,7 +569,12 @@ ${(deleteMode || printMode) ?
    style="margin-left:10px; transform:scale(1.3); cursor:pointer; accent-color:${printMode ? '#22c55e' : '#ef4444'};">`
   : ""}
       <h3 style="display:inline-block; margin-right:6px;">${row.full_name}</h3>
-      <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
+<p>
+  ${new Date(row.created_at).toLocaleDateString("he-IL")}
+  <span style="color:#64748b; font-size:0.9em;">
+    ${new Date(row.created_at).toLocaleTimeString("he-IL", { hour: '2-digit', minute: '2-digit' })}
+  </span>
+</p>
     `;
 
     // ✳️ פתיחה וסגירה
@@ -586,7 +591,12 @@ ${(deleteMode || printMode) ?
    style="margin-left:10px; transform:scale(1.3); cursor:pointer; accent-color:${printMode ? '#22c55e' : '#ef4444'};">`
   : ""}
           <h3 style="display:inline-block; margin-right:6px;">${row.full_name}</h3>
-          <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
+<p>
+  ${new Date(row.created_at).toLocaleDateString("he-IL")}
+  <span style="color:#64748b; font-size:0.9em;">
+    ${new Date(row.created_at).toLocaleTimeString("he-IL", { hour: '2-digit', minute: '2-digit' })}
+  </span>
+</p>
         `;
       } else {
         card.classList.add("open");
