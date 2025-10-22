@@ -404,6 +404,11 @@ button:focus, .card:focus{
 .card.open::-webkit-scrollbar-track {
   background: #f9fafb;
 }
+.card.selected-for-delete {
+  background: #fee2e2; /* אדום בהיר */
+  border-color: #f87171;
+  transition: background 0.2s ease, border 0.2s ease;
+}
 
 
   </style>
@@ -426,93 +431,227 @@ button:focus, .card:focus{
 
   <h1>סיכומי שאלוני אינטייק</h1>
   <button id="refreshBtn">רענן נתונים</button>
+<!-- 🔘 כפתורי מחיקה -->
+<div style="text-align:center; margin-bottom:20px;">
+  <!-- 🗑️ כפתור מחיקה ראשי -->
+  <button id="deleteModeBtn" style="background:#ef4444; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:bold; cursor:pointer;">
+    🗑️ מחק שאלונים
+  </button>
+
+  <!-- ✔️ כפתור בחר הכול (מופיע רק במצב מחיקה) -->
+  <button id="selectAllBtn" style="display:none; background:#9ca3af; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:bold; cursor:pointer; margin-right:6px;">
+    ✔️ בחר הכול
+  </button>
+</div>
 
   <div class="cards-container" id="cardsContainer"></div>
 <div id="centerMessage">✅ נשלח בהצלחה!</div>
 
-  <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-    const supabaseUrl = "https://tgfqsmarvznpzwdixvye.supabase.co";
-    const supabaseKey =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnZnFzbWFydnpucHp3ZGl4dnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3OTM1NzEsImV4cCI6MjA3NjM2OTU3MX0.ui5rHWh8KgSmhYrl_unozb9rwAaZQeTNEeMZF63lhYM";
-    const supabase = createClient(supabaseUrl, supabaseKey);
+ <script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+const supabaseUrl = "https://tgfqsmarvznpzwdixvye.supabase.co";
+const supabaseKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnZnFzbWFydnpucHp3ZGl4dnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3OTM1NzEsImV4cCI6MjA3NjM2OTU3MX0.ui5rHWh8KgSmhYrl_unozb9rwAaZQeTNEeMZF63lhYM";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const container = document.getElementById("cardsContainer");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const editBtn = document.getElementById("editQuestionsBtn");
+const container = document.getElementById("cardsContainer");
+const refreshBtn = document.getElementById("refreshBtn");
+const editBtn = document.getElementById("editQuestionsBtn");
+const deleteModeBtn = document.getElementById("deleteModeBtn");
+const selectAllBtn = document.getElementById("selectAllBtn");
 
-    async function loadCards() {
-      container.innerHTML = "<p>⏳ טוען נתונים...</p>";
-      const { data, error } = await supabase
-        .from("intake_forms")
-        .select("*")
-        .order("id", { ascending: false });
+let deleteMode = false; // מצב מחיקה מופעל או לא
 
-      if (error) {
-        container.innerHTML = "<p>❌ שגיאה בטעינה.</p>";
-        return;
-      }
+// 🧭 טעינת הסיכומים
+async function loadCards() {
+  container.innerHTML = "<p>⏳ טוען נתונים...</p>";
 
-      container.innerHTML = ""; // נקה לפני טעינה חדשה
-      if (data.length === 0) {
-        container.innerHTML = "<p>אין נתונים להצגה.</p>";
-        return;
-      }
+  const { data, error } = await supabase
+    .from("intake_forms")
+    .select("*")
+    .order("id", { ascending: false });
 
-      data.forEach(row => {
-        const card = document.createElement("div");
-        card.className = "card";
+  if (error) {
+    container.innerHTML = "<p>❌ שגיאה בטעינה.</p>";
+    return;
+  }
+
+  container.innerHTML = "";
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p>אין נתונים להצגה.</p>";
+    return;
+  }
+
+  data.forEach((row) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    // ✳️ מבנה הכרטיס
+    card.innerHTML = `
+      ${deleteMode ? `<input type="checkbox" class="delete-checkbox" data-id="${row.id}" style="margin-left:10px; transform:scale(1.3); cursor:pointer;">` : ""}
+      <h3 style="display:inline-block; margin-right:6px;">${row.full_name}</h3>
+      <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
+    `;
+
+    // ✳️ פתיחה וסגירה
+    card.addEventListener("click", (e) => {
+      // אם נלחץ על הצ'קבוקס — אל תפתח/סגור
+      if (e.target.classList.contains("delete-checkbox")) return;
+
+      if (card.classList.contains("open")) {
+        card.classList.remove("open");
         card.innerHTML = `
-          <h3>${row.full_name}</h3>
+          ${deleteMode ? `<input type="checkbox" class="delete-checkbox" data-id="${row.id}" style="margin-left:10px; transform:scale(1.3); cursor:pointer;">` : ""}
+          <h3 style="display:inline-block; margin-right:6px;">${row.full_name}</h3>
           <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
         `;
+      } else {
+        card.classList.add("open");
 
-        card.addEventListener("click", () => {
-          if (card.classList.contains("open")) {
-            card.classList.remove("open");
-            card.innerHTML = `
-              <h3>${row.full_name}</h3>
-              <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
-            `;
-          } else {
-            card.classList.add("open");
-          // ✅ עיצוב חדש עם בלוקים ברורים
-const answersHTML = Object.entries(row.answers)
-  .map(
-    ([q, a]) => `
-      <div class="answer-block">
-        <div class="question"> ${q}</div>
-        <div class="answer">${a}</div>
-      </div>
-    `
-  )
-  .join("");
+        const answersHTML = Object.entries(row.answers)
+          .map(
+            ([q, a]) => `
+              <div class="answer-block">
+                <div class="question">${q}</div>
+                <div class="answer">${a}</div>
+              </div>
+            `
+          )
+          .join("");
 
-           card.innerHTML = `
-  <h3>${row.full_name}</h3>
-  <p>${new Date(row.created_at).toLocaleString("he-IL")}</p>
-  ${answersHTML}
-`;
+        card.innerHTML = `
+          ${deleteMode ? `<input type="checkbox" class="delete-checkbox" data-id="${row.id}" style="margin-left:10px; transform:scale(1.3); cursor:pointer;">` : ""}
+          <h3 style="display:inline-block; margin-right:6px;">${row.full_name}</h3>
+          <p>${new Date(row.created_at).toLocaleDateString("he-IL")}</p>
+          ${answersHTML}
+        `;
+      }
+    });
 
-          }
-        });
+    container.appendChild(card);
+  });
+}
 
-        container.appendChild(card);
-      });
+// 🌀 רענון
+refreshBtn.onclick = () => loadCards();
+
+// ✏️ מעבר לעמוד עריכה
+editBtn.onclick = () => {
+  window.location.href = "edit_questions.html";
+};
+
+// 🚀 טעינה ראשונית
+loadCards();
+
+// 🗑️ כפתור יחיד — מחיקה/כניסה למצב מחיקה
+deleteModeBtn.onclick = async () => {
+  const showMessage = (text, color = "#22c55e") => {
+    const msg = document.getElementById("centerMessage");
+    msg.textContent = text;
+    msg.style.background = color;
+    msg.style.display = "block";
+    setTimeout(() => (msg.style.display = "none"), 2500);
+  };
+
+  // אם כבר במצב מחיקה
+  if (deleteMode) {
+    const checked = Array.from(document.querySelectorAll(".delete-checkbox:checked"));
+
+    if (checked.length === 0) {
+      // אין נבחרים → יציאה
+      deleteMode = false;
+      selectAllBtn.style.display = "none";
+      deleteModeBtn.textContent = "🗑️ מחק שאלונים";
+      loadCards();
+      showMessage("❗ לא נבחרו שאלונים למחיקה", "#f59e0b");
+      return;
     }
 
-    // רענון נתונים בלחיצה
-    refreshBtn.onclick = () => loadCards();
+    // 🧾 יצירת תיבת אישור ויזואלית במקום confirm()
+    const confirmBox = document.createElement("div");
+    confirmBox.style.position = "fixed";
+    confirmBox.style.top = "50%";
+    confirmBox.style.left = "50%";
+    confirmBox.style.transform = "translate(-50%, -50%)";
+    confirmBox.style.background = "#fff";
+    confirmBox.style.padding = "24px 32px";
+    confirmBox.style.borderRadius = "12px";
+    confirmBox.style.boxShadow = "0 12px 40px rgba(0,0,0,0.25)";
+    confirmBox.style.textAlign = "center";
+    confirmBox.style.zIndex = "9999";
+    confirmBox.style.fontSize = "1.1rem";
+    confirmBox.innerHTML = `
+      <p style="margin-bottom:18px; color:#1e3a8a; font-weight:bold;">
+        ${checked.length === document.querySelectorAll(".delete-checkbox").length
+          ? "למחוק את כל השאלונים לצמיתות?"
+          : `למחוק ${checked.length} שאלונים שנבחרו?`}
+      </p>
+      <div style="display:flex; justify-content:center; gap:14px;">
+        <button id="confirmYes" style="background:#ef4444; color:#fff; padding:10px 18px; border:none; border-radius:8px; font-weight:bold;">מחק</button>
+        <button id="confirmNo" style="background:#9ca3af; color:#fff; padding:10px 18px; border:none; border-radius:8px;">בטל</button>
+      </div>
+    `;
+    document.body.appendChild(confirmBox);
 
-    // כפתור עריכה — מעבר לדף העריכה
-    editBtn.onclick = () => {
-      window.location.href = "edit_questions.html";
+    // 🧩 מאזינים לכפתורים
+    document.getElementById("confirmNo").onclick = () => {
+      confirmBox.remove();
+      showMessage("בוטלה המחיקה", "#9ca3af");
     };
 
-    // טען את הנתונים עם פתיחת הדף
-    loadCards();
+    document.getElementById("confirmYes").onclick = async () => {
+      confirmBox.remove();
 
-    function showCenterMessage(text = "✅ נשלח בהצלחה!") {
+      // מחיקת הנבחרים
+      const deletions = checked.map(cb => supabase.from("intake_forms").delete().eq("id", cb.dataset.id));
+      const results = await Promise.all(deletions);
+      const failed = results.some(r => r.error);
+
+      if (failed) showMessage("⚠️ שגיאה במחיקה!", "#dc2626");
+      else showMessage("✅ הסיכומים נמחקו בהצלחה!");
+
+      deleteMode = false;
+      selectAllBtn.style.display = "none";
+      deleteModeBtn.textContent = "🗑️ מחק שאלונים";
+      await loadCards();
+    };
+
+    return;
+  }
+
+  // אם עוד לא במצב מחיקה — הפעלה
+  deleteMode = true;
+  selectAllBtn.style.display = "inline-block";
+  deleteModeBtn.textContent = "❌ מחק נבחרים / יציאה";
+  showMessage("📋 מצב מחיקה הופעל", "#3b82f6");
+  loadCards();
+};
+
+
+
+// ✔️ כפתור "בחר הכול" — עכשיו עובד כמו טוגל
+let allSelected = false;
+
+selectAllBtn.onclick = () => {
+  const checkboxes = document.querySelectorAll(".delete-checkbox");
+  allSelected = !allSelected;
+
+  checkboxes.forEach(cb => cb.checked = allSelected);
+
+  // משנה את הטקסט של הכפתור בהתאם למצב
+  selectAllBtn.textContent = allSelected ? "🚫 בטל בחירה" : "✔️ בחר הכול";
+};
+
+
+// 🎨 הוספת רקע אדמדם לפריטים שנבחרו
+document.addEventListener("change", (e) => {
+  if (e.target.classList.contains("delete-checkbox")) {
+    e.target.closest(".card").classList.toggle("selected-for-delete", e.target.checked);
+  }
+});
+
+// ✅ הודעת מרכז (אם תרצה להשתמש)
+function showCenterMessage(text = "✅ נשלח בהצלחה!") {
   const msg = document.getElementById("centerMessage");
   msg.textContent = text;
   msg.style.display = "block";
@@ -520,7 +659,8 @@ const answersHTML = Object.entries(row.answers)
     msg.style.display = "none";
   }, 2500);
 }
-  </script>
+</script>
+
 
 </body>
 </html>
