@@ -450,52 +450,114 @@ button:focus, .card:focus{
   transition: background 0.2s ease, border 0.2s ease;
 }
 
+/* 🎯 קוורט/חמישייה של כפתורים עם מסגרת כחולה אחידה */
+.button-quartet {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border: 3px solid #2563eb;   /* 🔹 צבע המסגרת */
+  border-radius: 16px;
+  padding: 16px;
+  background: #ffffff;
+  max-width: 550px;
+  margin: 20px auto;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* 🎨 עיצוב כל כפתור */
+.button-quartet button {
+  flex: 1 1 160px;
+  padding: 12px 18px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid #2563eb;   /* 🔹 מסגרת זהה */
+  border-radius: 10px;
+  background: transparent;
+  color: #2563eb;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+/* ✨ אפקט ריחוף */
+.button-quartet button:hover {
+  background: #2563eb;
+  color: #fff;
+  transform: translateY(-3px);
+}
+
+/* 🔁 התאמה ספציפית לכפתור רענון (אותו סגנון כמו השאר) */
+#refreshBtn {
+  border: 2px solid #2563eb !important;
+  background: transparent !important;
+  color: #2563eb !important;
+  box-shadow: none !important;
+}
+#refreshBtn:hover {
+  background: #2563eb !important;
+  color: #fff !important;
+}
+
+/* 🧭 מכולה מרכזת את כפתורי ההדפסה, הבחירה והכותרת */
+.center-buttons {
+  display: flex;
+  flex-direction: column;      /* ערימה אנכית */
+  align-items: center;         /* ממרכזת באמצע */
+  justify-content: center;
+  gap: 12px;
+  margin-top: 25px;
+  text-align: center;
+}
+
+/* 🎨 עיצוב בסיסי לכפתורים */
+.center-buttons button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.center-buttons button:hover {
+  background: #1e3a8a;
+  transform: translateY(-2px);
+}
+
+/* 🏷️ הכותרת */
+.center-buttons h1 {
+  margin: 10px 0 0;
+  color: #1e3a8a;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
 
   </style>
 </head>
 <body>
-
-  <!-- כפתור חזרה -->
-  <button onclick="window.location.href='index.html'"
-          style="background:#2563eb; color:white; margin-bottom:15px;">
-    ↩️ חזרה לדף הראשי
-  </button>
-
-  <!-- 🔘 סרגל עליון עם כפתורים -->
-<div class="top-buttons">
-  <button id="editQuestionsBtn">✏️ אוסף/מחק שאלות</button>
+<div class="button-quartet">
+  <button id="backBtn" onclick="window.location.href='index.html'">↩️ חזרה לדף הבית</button>
+  <button id="editQuestionsBtn">✏️ ערוך שאלות</button>
+  <button id="deleteModeBtn">🗑️ מחק שאלונים</button>
+  <button id="printModeBtn">🖨️ מצב הדפסה</button>
   <button id="refreshBtn">🔄 רענן נתונים</button>
 </div>
 
-<!-- 🔘 כפתורי מחיקה -->
-<div style="text-align:center; margin-bottom:20px;">
-  <!-- 🗑️ כפתור מחיקה ראשי -->
-  <button id="deleteModeBtn" style="background:#ef4444; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:bold; cursor:pointer;">
-    🗑️ מחק שאלונים
-  </button>
-
-<!-- 🖨️ כפתורי מצב הדפסה -->
-<button id="printModeBtn"
-        style="background:#16a34a; color:white; border:none; padding:10px 16px;
-               border-radius:10px; font-weight:bold; cursor:pointer; margin-right:6px; margin-top: 10px;">
-  🖨️ מצב הדפסה
-</button>
-
-<button id="printSelectedBtn"
-        style="display:none; background:#22c55e; color:white; border:none;
-               padding:10px 16px; border-radius:10px; font-weight:bold;
-               cursor:pointer; margin-right:6px;">
-  🖨️ הדפס נבחרים
-</button>
+<div class="center-buttons">
+  <button id="printSelectedBtn" style="display:none;">🖨️ הדפס נבחרים</button>
+  <button id="selectAllBtn" style="display:none;">✔️ בחר הכול</button>
   <h1>סיכומי שאלוני אינטייק</h1>
-
-
-
-  <!-- ✔️ כפתור בחר הכול (מופיע רק במצב מחיקה) -->
-  <button id="selectAllBtn" style="display:none; background:#9ca3af; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:bold; cursor:pointer; margin-right:6px;">
-    ✔️ בחר הכול
-  </button>
 </div>
+
+
+
+
+
+
+
 
   <div class="cards-container" id="cardsContainer"></div>
 <div id="centerMessage">✅ נשלח בהצלחה!</div>
