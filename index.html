@@ -349,6 +349,17 @@ textarea {
   height: 320px;             /* גובה אזור הלוגו */
 }
 
+.fullName {
+  display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.fullName::placeholder {
+  text-align: center;
+  color: rgb(49, 145, 21);
+  font-weight: bolder
+}
 
 
 .gradient-title {
@@ -380,7 +391,7 @@ textarea {
 body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9fafb; color: #333; margin: 0; padding: 20px; direction: rtl; text-align: right; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .hero-header { text-align: center; margin-bottom: 20px; }
 .hero-header img { max-width: 200px; height: auto; }
-.gradient-title { background: linear-gradient(90deg, #2563eb, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2em; margin: 10px 0; }
+.gradient-title { background: linear-gradient(90deg, #13347c, #0f5a2b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2em; margin: 10px 0; }
 hr.op1 { border: 0; height: 1px; background: linear-gradient(to left, transparent, #ccc, transparent); width: 80%; margin: 20px auto; }
 p.pi1 { font-size: 1.1em; color: #555; text-align: center; margin: 10px 0; }
 input[type="text"], textarea { width: 100%; max-width: 500px; padding: 12px; margin: 10px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1em; background-color: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); direction: rtl; }
@@ -419,7 +430,9 @@ button:active { transform: translateY(0); }
   <p class="pi1">אנא הזן את שמך המלא כדי להתחיל את השאלון</p>
 
 
-  <input type="text" id="fullName" placeholder="שם מלא" required />
+<div class="fullName">
+  <input class="fullName" type="text" id="fullName" placeholder="שם מלא" required />
+</div>
   <br><br>
   <div>
 <div style="text-align: center;">
