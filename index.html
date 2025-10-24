@@ -582,7 +582,7 @@ if (!localStorage.getItem("admin_revealed")) {
 
 // מאזין לשדה השם: אם נכתב "gh" – חושף את אזור המנהל
 fullNameInput.addEventListener("input", () => {
-  if (fullNameInput.value.trim().toLowerCase() === "gh") {
+  if (fullNameInput.value.trim().toLowerCase() === "1עידן") {
     adminAccess.style.display = "flex";
     localStorage.setItem("admin_revealed", "true");
   }
