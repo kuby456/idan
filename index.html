@@ -303,22 +303,128 @@ textarea {
   85% { opacity: 1; transform: translate(-50%, -50%); }
   100% { opacity: 0; transform: translate(-50%, -40%); }
 }
+/* 🎯 רק תמונה ממורכזת בהדר */
+.hero-header {
+  display: flex;
+  justify-content: center;     /* ממרכז אופקית */
+  align-items: center;         /* ממורכז אנכית (אם יש גובה) */
+  text-align: center;
+  background: transparent;     /* אין רקע כלל */
+  box-shadow: none;
+  border: none;
+}
 
+/* 🖼️ התמונה עצמה */
+.hero-header img {
+  width: 300px;                /* 📏 גודל התמונה */
+  height: auto;
+  border-radius: 20px;         /* פינות רכות */
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* מובייל */
+@media (max-width: 560px) {
+  .hero-header img {
+    width: 300px;  /* גודל קטן יותר למסכים קטנים */
+  }
+}
+
+
+.line1 {
+  border: none;                /* מבטל את הקו הדיפולטי */
+  height: 1.7px;                 /* עובי הקו */
+  background-color: #1eaeda;   /* צבע (כחול למשל) */
+  border-radius: 2px;          /* פינות רכות */
+  width: 60%;                  /* אורך הקו */
+  margin: 20px auto;           /* ממורכז */
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;   /* ממרכז אופקית */
+  align-items: center;       /* ממרכז אנכית */
+  height: 320px;             /* גובה אזור הלוגו */
+}
+
+
+
+.gradient-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(to left, #413261b4, #2c5458bd); /* כחול ← ירוק */
+  -webkit-background-clip: text;   /* גורם לצבע הגרדיאנט למלא את האותיות */
+  -webkit-text-fill-color: transparent; /* הופך את הטקסט עצמו לשקוף */
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.pi1{
+  font-weight: bold;
+  color: rgb(129, 129, 129);
+  text-align: center;
+  font-size: 20px;
+}
+.op1 {
+  border: none;                /* מבטל את הקו הדיפולטי */
+  height: 3px;                 /* עובי הקו */
+  background-color: #525274;   /* צבע (כחול למשל) */
+  border-radius: 2px;          /* פינות רכות */
+  width: 130px;                  /* אורך הקו */
+  margin: 20px auto;
+}
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9fafb; color: #333; margin: 0; padding: 20px; direction: rtl; text-align: right; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.hero-header { text-align: center; margin-bottom: 20px; }
+.hero-header img { max-width: 200px; height: auto; }
+.gradient-title { background: linear-gradient(90deg, #2563eb, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2em; margin: 10px 0; }
+hr.op1 { border: 0; height: 1px; background: linear-gradient(to left, transparent, #ccc, transparent); width: 80%; margin: 20px auto; }
+p.pi1 { font-size: 1.1em; color: #555; text-align: center; margin: 10px 0; }
+input[type="text"], textarea { width: 100%; max-width: 500px; padding: 12px; margin: 10px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1em; background-color: #fff; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); direction: rtl; }
+input[type="text"]:focus, textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); }
+button { padding: 12px 24px; background-color: #2563eb; color: white; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; transition: background-color 0.3s, transform 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1); }
+button:hover { background-color: #1d4ed8; transform: translateY(-2px); }
+button:active { transform: translateY(0); }
+#startBtn { background-color: #22c55e; }
+#startBtn:hover { background-color: #16a34a; }
+#adminBtn { background-color: #6b7280; margin-top: 20px; }
+#adminBtn:hover { background-color: #4b5563; }
+.top-left-btn { position: fixed; top: 20px; left: 20px; background: none; border: none; font-size: 24px; cursor: pointer; z-index: 1000; }
+.hidden { display: none !important; }
+.question { margin-bottom: 20px; }
+.question label { display: block; font-weight: bold; margin-bottom: 8px; color: #374151; }
+.error { border-color: #ef4444 !important; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2) !important; }
+#formMessage { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); padding: 16px 32px; border-radius: 12px; color: white; font-weight: bold; font-size: 1.1em; display: none; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); z-index: 1000; transition: opacity 0.5s; }
+#formScreen { width: 100%; max-width: 600px; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+#intakeForm button[type="submit"] { width: 100%; margin-top: 20px; background-color: #22c55e; }
+#intakeForm button[type="submit"]:hover { background-color: #16a34a; }
+#nameScreen { width: 100%; max-width: 500px; text-align: center; }
   </style>
 </head>
 <body>
+
+
     <!-- כפתור עליון שמאלי -->
 <!-- כפתור עליון שמאלי -->
 <button id="topLeftBtn" title="חזרה" class="top-left-btn hidden">🔙</button>
 
-<!-- מסך הכנסת שם -->
-<div id="nameScreen">
-  <h2>ברוך הבא</h2>
-  <p>אנא הזן את שמך המלא כדי להתחיל את השאלון</p>
+
+
+  <h2 class="gradient-title" style="text-align: center" >ברוך הבא</h2>
+   <hr class="op1">
+    <p class="pi1">שאלון פתיחה למטופלים חדשים</p>
+  <p class="pi1">אנא הזן את שמך המלא כדי להתחיל את השאלון</p>
+
+
   <input type="text" id="fullName" placeholder="שם מלא" required />
   <br><br>
   <div>
-    <button id="startBtn">המשך</button>
+<div style="text-align: center;">
+  <button id="startBtn">המשך</button>
+</div>
   </div>
   <br>
   <div style="display:flex; flex-direction:column; align-items:center;">
@@ -466,6 +572,21 @@ if (localStorage.getItem("admin_verified") === "true") {
   adminMessage.innerText = "✔️ גישה מאושרת";
   adminPanelBtn.style.display = "inline-block";
 }
+// ✅ הסתרת הגישה למנהל עד שיכתב "gh"
+const adminAccess = document.getElementById("adminAccess");
+
+// אם אין סימון בזיכרון – מסתירים
+if (!localStorage.getItem("admin_revealed")) {
+  adminAccess.style.display = "none";
+}
+
+// מאזין לשדה השם: אם נכתב "gh" – חושף את אזור המנהל
+fullNameInput.addEventListener("input", () => {
+  if (fullNameInput.value.trim().toLowerCase() === "gh") {
+    adminAccess.style.display = "flex";
+    localStorage.setItem("admin_revealed", "true");
+  }
+});
 
 // בדיקת קוד
 adminSubmit.onclick = () => {
